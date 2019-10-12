@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="stat">
+        <item>No Asignado</item>
+        <item>En emisión</item>
+        <item>Finalizado</item>
+        <item>Estreno</item>
+        <item>Olvidado</item>
+    </string-array>
+
+    <string-array name="Type">
+        <item>No Asignado</item>
+        <item>Anime</item>
+        <item>Movie</item>
+        <item>Serie</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="days">
+        <item>No Asignado</item>
+        <item>Domingo</item>
+        <item>Lunes</item>
+        <item>Martes</item>
+        <item>Miércoles</item>
+        <item>Jueves</item>
+        <item>Viernes</item>
+        <item>Sábado</item>
+    </string-array>
+
+    <string-array name="colors_in">
+        <item >#909b9b9b</item>
+        <item >#b488ff</item>
+        <item >#88a0ff</item>
+        <item >#f77979</item>
+        <item >#63be5e</item>
+        <item >#f5ff88</item>
+        <item >#ffae88</item>
+        <item >#FF9DD0</item>
+        <item >#F1F1F1</item>
+        <item >#707070</item>
+    </string-array>
+
+    <string-array name="colors_pos">
+        <item >#909b9b9b</item>
+        <item >#5600c6</item>
+        <item >#002fe7</item>
+        <item >#de0000</item>
+        <item >#008402</item>
+        <item >#cee100</item>
+        <item >#dc4600</item>
+        <item >#c60056</item>
+        <item >#b9b9b9</item>
+        <item >#000000</item>
+    </string-array>
+
+    <string-array name="colors_name">
+        <item>No Asignado</item>
+        <item >Violeta</item>
+        <item >Azul</item>
+        <item >Rojo</item>
+        <item >Verde</item>
+        <item >Amarillo</item>
+        <item >Naranja</item>
+        <item >Rosado</item>
+        <item >Blanco</item>
+        <item >Negro</item>
+    </string-array>
+
+    <string-array name="Others">
+        <item >undefined</item>
+        <item >Cap:</item>
+        <item >Temp:</item>
+        <item >Serie</item>
+        <item >Ova:</item>
+    </string-array>
+
+</resources>

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="2dp"
+        app:cardCornerRadius="6dp"
+        android:elevation="4dp"
+        app:cardElevation="5dp"
+        app:cardMaxElevation="6dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center_vertical">
+
+                <LinearLayout
+                    android:layout_weight="0.10"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent">
+
+                    <ImageButton
+                        android:id="@+id/ibtn_item_details"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/colorPrimary"
+                        android:src="@drawable/ic_schedule"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_weight="0.65"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <View
+                        android:id="@+id/v_item_color"
+                        android:layout_width="match_parent"
+                        android:layout_height="4dp"
+                        android:background="@color/colorPrimaryDark"/>
+
+                    <TextView
+                        android:id="@+id/tv_item_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="fill_parent"
+                        android:gravity="center"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:lines="2"
+                        android:text="@string/app_name"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_weight="0.15"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tv_item_name_cap"
+                        android:layout_weight="0.4"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:textStyle="bold"
+                        android:text="Capitulo:"
+                        android:gravity="center"
+                        android:textSize="13sp"
+                        tools:ignore="NestedWeights" />
+
+                    <TextView
+                        android:id="@+id/tv_item_cap"
+                        android:layout_weight="0.6"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:gravity="center"
+                        android:text="00000"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_weight="0.07"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent">
+
+                    <ImageButton
+                        android:id="@+id/ibtn_item_setting"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/colorPrimary"
+                        android:src="@drawable/ic_menu_line_vert"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#A0A0A0"/>
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>

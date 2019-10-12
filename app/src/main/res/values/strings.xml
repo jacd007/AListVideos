@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">AList</string>
+
+    <!-- DATE -->
+    <string name="Format">yyyy-MM-dd HH:mm:ss</string>
+    <string name="DAY_Format">EEEE</string>
+
+    <!-- SHARED -->
+    <string name="SHARED_KEY">Shared_key</string>
+
+</resources>

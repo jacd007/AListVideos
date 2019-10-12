@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.SelectListActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/m_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimaryDark"
+        android:elevation="4dp"
+        app:title="@string/app_name"
+        app:titleTextColor="#fff"
+        android:visibility="gone"
+        android:theme="@style/Theme.AppCompat.Light"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        tools:ignore="MissingConstraints" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.9">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_List"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+
+                android:layout_marginHorizontal="2dp"
+                tools:ignore="UnusedAttribute" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.1">
+
+            <ImageButton
+                android:id="@+id/ibtn_list_add"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.25"
+                android:background="@color/colorPrimaryDark"
+                android:src="@drawable/ic_add_list"/>
+
+            <ImageButton
+                android:id="@+id/ibtn_list_save"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.25"
+                android:background="@color/colorPrimaryDark"
+                android:src="@drawable/ic_save"/>
+
+            <ImageButton
+                android:id="@+id/ibtn_list_send"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.25"
+                android:background="@color/colorPrimaryDark"
+                android:src="@drawable/ic_send"/>
+
+            <TextView
+                android:id="@+id/tv_list_exit"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.25"
+                android:textColor="@color/White"
+                android:gravity="center"
+                android:text="0000"
+                android:textStyle="bold"
+                android:textSize="17sp"
+                android:background="@color/colorPrimaryDark" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

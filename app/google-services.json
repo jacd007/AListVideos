@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "625037689786",
+    "firebase_url": "https://alist-video.firebaseio.com",
+    "project_id": "alist-video",
+    "storage_bucket": "alist-video.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:625037689786:android:bab3837132cbe85db2d383",
+        "android_client_info": {
+          "package_name": "com.zippyttech.alist"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "625037689786-7sng01eg1vdnccuhres0faonehdjgoen.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.zippyttech.alist",
+            "certificate_hash": "39dacb17a8a68887239eec81b763d5fec54386d9"
+          }
+        },
+        {
+          "client_id": "625037689786-in3h0jnqb1b6de9lnlfuhmcqpn2n1fcs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA1gBwisLEXMdhmz4mdZiR_EFDXVSQxeP8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "625037689786-in3h0jnqb1b6de9lnlfuhmcqpn2n1fcs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
