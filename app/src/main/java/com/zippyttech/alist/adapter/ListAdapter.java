@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.zippyttech.alist.common.UtilsItemList;
 import com.zippyttech.alist.common.UtilsGson;
+import com.zippyttech.alist.data.AListDB;
 import com.zippyttech.alist.view.EditActivity;
 import com.zippyttech.alist.R;
 import com.zippyttech.alist.model.VideoModel;
@@ -29,7 +29,6 @@ import com.zippyttech.alist.view.DialogView;
 import com.zippyttech.alist.view.SelectListActivity;
 import com.zippyttech.datelib.DateUtils.UtilsDate;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -207,6 +206,8 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder>{
                     public void onClick(DialogInterface dialog, int which) {
                         Toast.makeText(context, "Eliminando "+vm.getTitle()+"...", Toast.LENGTH_SHORT).show();
                         mData.remove(position);
+                        AListDB aListDB = new AListDB(context);
+                        aListDB.deleteItemProductByTag(vm.getTag());
                         refresh();
                         dialog.dismiss();
                     }

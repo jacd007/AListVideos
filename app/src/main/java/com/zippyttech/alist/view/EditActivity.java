@@ -23,6 +23,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -63,6 +64,7 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
     private List<SpnModel> listSpn;
     private String[] COLOR_IN, COLOR_POS, COLOR_NAME, DAYS, TYPE, STAT,OTHERS;
 
+    private CheckBox cbCloud;
     private ImageView ivImage;
     private TextView tvTitles, tvCap, tvDateC, tvDateU;
     private EditText etTitle, etCap;
@@ -78,6 +80,7 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
 
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
+    private Uri path;
 
 
     @Override
@@ -110,6 +113,8 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
         TYPE = getResources().getStringArray(R.array.Type);
         STAT = getResources().getStringArray(R.array.stat);
         OTHERS = getResources().getStringArray(R.array.Others);
+
+         cbCloud = (CheckBox) findViewById(R.id.cbFirebase);
 
         vColors = (View) findViewById(R.id.vItemColor);
         swTitle = (Switch) findViewById(R.id.swTitle);
@@ -198,6 +203,16 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
         mFollowText(etTitle,tvTitles);
         mFollowText(etCap,tvCap);
         setPositionSpinner();
+        cbCloud.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b){
+                    Toast.makeText(EditActivity.this, "Guardado en la nube.", Toast.LENGTH_SHORT).show();
+                }else {
+                    Toast.makeText(EditActivity.this, "Guardado solo en local.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     private void setPositionSpinner() {
@@ -327,7 +342,8 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
                 etCap.setText(""+capItem);
                 break;
             case R.id.btnItemCancel:
-                finish();
+                Intent i1 = new Intent();
+                setResult(RESULT_CANCELED, i1);
                 break;
             case R.id.btnItemSave:
 
@@ -353,14 +369,15 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
                 String jsonSTR = UtilsGson.ListToString(list);
                 i.putExtra(UtilsItemList.myLIST, jsonSTR);
 
-                if (Utils.isNetworkConnectionAvailable(this))
-                    AutoSave(list);
-                else
+                Log.w(TAG,jsonSTR);
+
+                if (Utils.isNetworkConnectionAvailable(this)) {
+                    if (cbCloud.isChecked()) AutoSave(list);
+                } else
                     Toast.makeText(this, "Internet Disabled, DB-firebase no connect.", Toast.LENGTH_SHORT).show();
 
-                Log.w(TAG,jsonSTR);
                 setResult(RESULT_OK, i);
-                finish();
+               finish();
                 break;
         }
 
@@ -436,6 +453,7 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
                 Log.w(TAG, "List item: " + date);
 
                 list = UtilsGson.StringToList(date);
+//                Log.w(TAG,"image bundle: "+list.get(0).getImage64());
             } else {
                 Log.w(TAG, "parametros nulos");
             }
@@ -553,7 +571,7 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
         Bitmap bitmap;
         if (data!=null) {
             if ((resultCode == RESULT_OK) && (requestCode== Codes.GaleryToEdit)) {
-                Uri path = data.getData();
+                 path = data.getData();
                 Glide.with(this)
                         .load(path)
                         .placeholder(R.drawable.ic_broken_image)
@@ -564,7 +582,7 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
                 try {
                     Log.w(TAG,"pollo: "+strDir);
                     bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), path);
-                    strB64 = UtilsImage.BitmapToBase64(bitmap);
+                    strB64 = UtilsImage.bitmapToBase64(bitmap);
                     vm.setImage64(strB64);
                     Log.w(TAG,"JSON EDITAR galeria: "+strB64);
                 }catch (Exception e){

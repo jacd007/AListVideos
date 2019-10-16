@@ -28,7 +28,20 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.9">
+            android:layout_weight="0.9"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvIsItem"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:background="@color/semi_black_trans"
+                android:textColor="@color/lightWhite"
+                android:gravity="center"
+                android:text="No hay videos en la lista."/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_List"

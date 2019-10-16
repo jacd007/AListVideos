@@ -7,8 +7,8 @@ android {
         applicationId "com.zippyttech.alist"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 3
-        versionName "0.3"
+        versionCode 4
+        versionName "0.4"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true //important
     }
@@ -66,6 +66,7 @@ dependencies {
     implementation 'com.github.jacd007:DateLibrary:1.0.0.5'
     implementation 'com.google.firebase:firebase-analytics:17.2.0'
     implementation 'com.google.firebase:firebase-database:19.1.0'
+    implementation 'com.google.firebase:firebase-storage:16.0.3'
 
     implementation 'com.github.jacd007:ApiAsyncTask:0.2'
 }

@@ -204,13 +204,13 @@ public class AListDB {
 
     }
 
-        public void deleteItemProductById(String id){
+        public void deleteItemProductByTag(String tag){
             db = mDbHelper.getWritableDatabase();
 //        String deleteQuery="DELETE FROM "+ ProductSchedule.Product.TABLE_NAME;
 //        db.execSQL(deleteQuery);
 
             db.delete(AListSchedule.Videos.TABLE_NAME,
-                    AListSchedule.Videos.COLUMN_NAME_ID + " = ?", new String[]{id});
+                    AListSchedule.Videos.COLUMN_NAME_TYPE + " = ?", new String[]{tag});
             db.close();
 
         }
@@ -277,10 +277,10 @@ public class AListDB {
         db = mDbHelper.getWritableDatabase();
         VideoModel item=null;
         String table_item= AListSchedule.Videos.TABLE_NAME;
-        String column_id= AListSchedule.Videos.COLUMN_NAME_ID;
+        String column_id= AListSchedule.Videos.COLUMN_NAME_TAG;
 
 
-        Cursor c = db.rawQuery("SELECT * FROM " +table_item +" WHERE "+column_id+"="+id+";", null);
+        Cursor c = db.rawQuery("SELECT * FROM " +table_item +" WHERE "+column_id+"=\""+id+"\";", null);
         c.moveToFirst();
         boolean exist=false;
 
@@ -296,11 +296,11 @@ public class AListDB {
     }
 
 
-    public void updateData(int id, List<VideoModel> list){
+    public void updateData(String tag, List<VideoModel> list){
 
        try {
-           if (isExistitem(""+id)){
-               deleteItemProductById(""+id);
+           if (isExistitem(""+tag)){
+               deleteItemProductByTag(""+tag);
                setVideo(list);
            }else Log.e(TAG, "No Existe este anime");
        }catch (NullPointerException e){

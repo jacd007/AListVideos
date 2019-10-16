@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -33,6 +34,8 @@ import com.zippyttech.alist.model.VideoModel;
 import com.zippyttech.datelib.DateUtils.UtilsDate;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class SelectListActivity extends AppCompatActivity implements View.OnClickListener, SearchView.OnQueryTextListener {
@@ -41,6 +44,9 @@ public class SelectListActivity extends AppCompatActivity implements View.OnClic
 
     private com.zippyttech.alist.adapter.ListAdapter adapter;
     private LinearLayoutManager llm;
+
+    private SharedPreferences settings;
+    private static SharedPreferences.Editor editor;
 
     private RecyclerView rv;
     private ImageButton ibtnAdd;
@@ -66,8 +72,8 @@ public class SelectListActivity extends AppCompatActivity implements View.OnClic
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_list);
-        initComponent();
         initFirebase();
+        initComponent();
     }
 
     private void initFirebase() {
@@ -77,6 +83,9 @@ public class SelectListActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void initComponent() {
+        settings = getSharedPreferences(getResources().getString(R.string.SHARED_KEY), 0);
+        editor = settings.edit();
+
         aListDB = new AListDB(this);
         mContext = SelectListActivity.this;
         acti = (AppCompatActivity) SelectListActivity.this;
@@ -85,6 +94,7 @@ public class SelectListActivity extends AppCompatActivity implements View.OnClic
         ibtnSave = (ImageButton) findViewById(R.id.ibtn_list_save);
         ibtnSend = (ImageButton) findViewById(R.id.ibtn_list_send);
         tvCount = (TextView) findViewById(R.id.tv_list_exit);
+
 
         ibtnAdd.setOnClickListener(this);
         ibtnSave.setOnClickListener(this);
@@ -99,7 +109,9 @@ public class SelectListActivity extends AppCompatActivity implements View.OnClic
         STAT = getResources().getStringArray(R.array.stat);
 
         list = aListDB.getVideo();
+        print(list);
 //        crearItem();
+
 
     }
 
@@ -109,8 +121,12 @@ public class SelectListActivity extends AppCompatActivity implements View.OnClic
 
         switch (id){
             case R.id.ibtn_list_add:
+                int count = 0;
 //                    crear1Item();
-                int count = (list.size() > 0) ? adapter.getItemCount() : 0;
+                try{
+                    count = (list.size() > 0) ? adapter.getItemCount() : 0;
+                }catch (NullPointerException e){e.printStackTrace(); }
+
                     Intent newItem = new Intent(this,EditActivity.class);
                     newItem.putExtra("new",true);
                     newItem.putExtra("position",count);
@@ -126,8 +142,15 @@ public class SelectListActivity extends AppCompatActivity implements View.OnClic
                 break;
 
             case R.id.tv_list_exit:
-
+                if (aListDB.getSizeDB()>0){
+                    List<VideoModel> aux = new ArrayList<>();
+                    Toast.makeText(mContext, "Borrado de DB", Toast.LENGTH_SHORT).show();
+                    aListDB.deleteAll();
+                    aux = aListDB.getVideo();
+                    print(aux);
+                }else Toast.makeText(mContext, "Lista ya esta vacía.", Toast.LENGTH_SHORT).show();
                 break;
+
         }
 
     }
@@ -155,12 +178,43 @@ public class SelectListActivity extends AppCompatActivity implements View.OnClic
         return super.onCreateOptionsMenu(menu);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        switch (id){
+            case R.id.action_ord_name:
+                ordenarList(0);
+                break;
+            case R.id.action_ord_status:
+                ordenarList(1);
+                break;
+            case R.id.action_ord_date:
+                ordenarList(2);
+                break;
+        }
+//        if (id == R.id.act_settings) {
+//            return true;
+//        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     private void print(List<VideoModel> LIST) {
         llm = new LinearLayoutManager(mContext);
         rv.setLayoutManager(llm);
         adapter = new ListAdapter(LIST,this, acti,tvCount);
         rv.setAdapter(adapter);
         tvCount.setText(""+adapter.getItemCount());
+        TextView tvX = (TextView) findViewById(R.id.tvIsItem);
+        if (list.size()>0)
+            tvX.setVisibility(View.GONE);
+        else
+            tvX.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -178,9 +232,10 @@ public class SelectListActivity extends AppCompatActivity implements View.OnClic
                             Log.w("onActivityResult","data "+ dateList);
                             int position = data.getIntExtra("position",0);
                             auxList = UtilsGson.StringToList(dateList);
+
                             try{
                                 adapter.replaceItem( UtilsGson.StringToList(dateList) , position );
-//                                aListDB.updateData(a0, auxList);
+//                                aListDB.updateData(auxList.get(0).getTag(), auxList);
                             }catch (NullPointerException e){e.printStackTrace();}
 
                             AutoSave();
@@ -198,7 +253,7 @@ public class SelectListActivity extends AppCompatActivity implements View.OnClic
                             list.addAll(auxList);
                             try {
                                print(list);
-                               aListDB.setVideo(auxList);
+//                               aListDB.setVideo(auxList);
                             }catch (NullPointerException e){e.printStackTrace();}
 
                             AutoSave();
@@ -313,5 +368,99 @@ public class SelectListActivity extends AppCompatActivity implements View.OnClic
 
         adapter.refresh(list_aux);
         return false;
+    }
+
+    private void ordenarList(int i) {
+        //TODO: ordenamiendo de la lista
+        final String FORMAT = "yyyy-MM-dd HH:mm:ss";
+        List<VideoModel> list = new ArrayList<>();
+       list = aListDB.getVideo();
+
+        if (list.size()>0){
+            switch (i){
+                case 0:
+                    adapter.notifyDataSetChanged();
+                    break;
+                case 1:
+                    //por status
+                    Collections.sort(list, new Comparator<VideoModel>() {
+                        @Override
+                        public int compare(VideoModel o1, VideoModel o2) {
+                            int rsp,infinite;
+                            infinite=1000;
+                            int va1=0;
+                            int va2=0;
+//                        String aux1 = ""+o1.getStat();
+//                        String aux2 = ""+o2.getStat();
+
+//                        va1 = ifText(aux1);
+//                        va2 = ifText(aux2);
+                            va1 = o1.getStat();
+                            va2 = o2.getStat();
+
+                            if (va1 < va2) {
+                                rsp = 1;
+                            } else if (va1 > va2) {
+                                rsp = -1;
+                            } else {
+                                rsp = 0;
+                            }
+                            return rsp;
+                        }
+                    });
+                    adapter.refresh(list);
+                    adapter.notifyDataSetChanged();
+                    break;
+                case 2:
+                    //por fecha
+                    final int today = UtilsDate.Epoch( UtilsDate.dateTodayFormat(FORMAT) , FORMAT );
+                    Collections.sort(list, new Comparator<VideoModel>() {
+                        @Override
+                        public int compare(VideoModel o1, VideoModel o2) {
+                            int rsp,infinite;
+                            infinite=today+today+today+today;
+                            int va1=0;
+                            int va2=0;
+//                        String aux1 = ""+o1.getDateC();
+//                        String aux2 = ""+o2.getDateU();
+//                        try{
+//                            va1 = aux1.equals("null")?(infinite):Utils.Epoch(o1.getDateUpdate(), FORMAT);
+//                            va2 = aux2.equals("null")?(infinite):Utils.Epoch(o2.getDateUpdate(),FORMAT);
+//                        }catch (NullPointerException e){
+//                            e.printStackTrace();
+//                        }
+                            va1 = o1.getDateC();
+                            va2 = o2.getDateU();
+
+                            if (va1 < va2) {
+                                rsp = 1;
+                            } else if (va1 > va2) {
+                                rsp = -1;
+                            } else {
+                                rsp = 0;
+                            }
+                            return rsp;
+                        }
+                    });
+                    adapter.refresh(list);
+                    adapter.notifyDataSetChanged();
+
+                    break;
+            }
+        }else {
+            Toast.makeText(mContext, "No hay item en la lista.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (adapter.getList().size()>0){
+            Toast.makeText(mContext, "Lista guardada...", Toast.LENGTH_SHORT).show();
+            Log.e(TAG,"Saliendo de la apps");
+            List<VideoModel> aux = adapter.getList();
+            if (aListDB.getSizeDB()>0) aListDB.deleteAll();
+            aListDB.setVideo(aux);
+        }
     }
 }
