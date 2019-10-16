@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,11 +16,13 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -28,18 +31,29 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.StorageTask;
+import com.google.firebase.storage.UploadTask;
+import com.zippyttech.alist.MainActivity;
 import com.zippyttech.alist.R;
 import com.zippyttech.alist.adapter.MyAdapter;
 import com.zippyttech.alist.common.Codes;
+import com.zippyttech.alist.common.Upload;
 import com.zippyttech.alist.common.Utils;
 import com.zippyttech.alist.common.UtilsGson;
 import com.zippyttech.alist.common.UtilsImage;
@@ -78,9 +92,14 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
     private boolean NEW_ITEM;
     private View vColors;
 
-    FirebaseDatabase firebaseDatabase;
-    DatabaseReference databaseReference;
-    private Uri path;
+
+    private FirebaseDatabase mFirebaseDataBase;
+
+    private Uri mImageUri;
+    private StorageReference mStorageRef;
+    private DatabaseReference mDatabaseRef;
+    private ProgressBar mProgressBar;
+    private StorageTask mUploadTask;
 
 
     @Override
@@ -93,8 +112,11 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initFirebase() {
         FirebaseApp.initializeApp(this);
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference();
+        mStorageRef = FirebaseStorage.getInstance().getReference("uploads");
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference("uploads");
+
+        mFirebaseDataBase = FirebaseDatabase.getInstance();
+
     }
 
     private void initComponent() {
@@ -114,6 +136,7 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
         STAT = getResources().getStringArray(R.array.stat);
         OTHERS = getResources().getStringArray(R.array.Others);
 
+        mProgressBar = findViewById(R.id.progress_bar);
          cbCloud = (CheckBox) findViewById(R.id.cbFirebase);
 
         vColors = (View) findViewById(R.id.vItemColor);
@@ -372,12 +395,21 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
                 Log.w(TAG,jsonSTR);
 
                 if (Utils.isNetworkConnectionAvailable(this)) {
-                    if (cbCloud.isChecked()) AutoSave(list);
+
+                    if (cbCloud.isChecked()) {
+                        AutoSave(list);
+                        if (mUploadTask != null && mUploadTask.isInProgress()) {
+                            Toast.makeText(EditActivity.this, "Upload in progress", Toast.LENGTH_SHORT).show();
+                        } else {
+                            uploadFile();
+                        }
+                    }
                 } else
                     Toast.makeText(this, "Internet Disabled, DB-firebase no connect.", Toast.LENGTH_SHORT).show();
 
                 setResult(RESULT_OK, i);
                finish();
+
                 break;
         }
 
@@ -390,8 +422,8 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
         im.setTitle(vm.getTitle());
         im.setImage64(vm.getImage64());
 
-        databaseReference.child("Video").child(vm.getTag()).setValue(vm);
-        databaseReference.child("Imagenes").child(im.getTag()).setValue(im);
+        mDatabaseRef.child("Video").child(vm.getTag()).setValue(vm);
+        mDatabaseRef.child("Imagenes").child(im.getTag()).setValue(im);
         Log.w(TAG,"Aqui debe borrrar y limpiar DB.....");
     }
 
@@ -542,6 +574,62 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    private String getFileExtension(Uri uri) {
+        ContentResolver cR = getContentResolver();
+        MimeTypeMap mime = MimeTypeMap.getSingleton();
+        return mime.getExtensionFromMimeType(cR.getType(uri));
+    }
+
+    private void uploadFile() {
+        if (mImageUri != null) {
+            StorageReference fileReference = mStorageRef.child(System.currentTimeMillis()
+                    + "." + getFileExtension(mImageUri));
+
+            mUploadTask = fileReference.putFile(mImageUri)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mProgressBar.setProgress(0);
+                                }
+                            }, 500);
+
+                            Toast.makeText(EditActivity.this, "Upload successful", Toast.LENGTH_LONG).show();
+                            Task<Uri> task = taskSnapshot.getMetadata().getReference().getDownloadUrl();
+                            task.addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    String photoLink = uri.toString();
+//                                    Log.w(TAG,"URL:::: "+photoLink);
+                                    Upload upload = new Upload(etTitle.getText().toString().trim(),
+                                            taskSnapshot.getMetadata().getReference().getDownloadUrl().toString() );
+                                    String uploadId = mDatabaseRef.push().getKey();
+                                    mDatabaseRef.child(uploadId).setValue(upload);
+                                }
+                            });
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(EditActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                            double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
+                            mProgressBar.setProgress((int) progress);
+                        }
+                    });
+        } else {
+            Toast.makeText(this, "No file selected", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -571,20 +659,20 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
         Bitmap bitmap;
         if (data!=null) {
             if ((resultCode == RESULT_OK) && (requestCode== Codes.GaleryToEdit)) {
-                 path = data.getData();
+                 mImageUri = data.getData();
                 Glide.with(this)
-                        .load(path)
+                        .load(mImageUri)
                         .placeholder(R.drawable.ic_broken_image)
                         .error(R.drawable.ic_no_image)
                         .into(ivImage);
-//                ivPhoto.setImageURI(path);
-                String strDir = "file/"+path.toString().substring(8)+".png";
+//                ivPhoto.setImageURI(mImageUri);
+                String strDir = "file/"+ mImageUri.toString().substring(8)+".png";
                 try {
                     Log.w(TAG,"pollo: "+strDir);
-                    bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), path);
+                    bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), mImageUri);
                     strB64 = UtilsImage.bitmapToBase64(bitmap);
                     vm.setImage64(strB64);
-                    Log.w(TAG,"JSON EDITAR galeria: "+strB64);
+                    Log.w(TAG,"JSON EDITAR galeria: "+strB64.length()+" char");
                 }catch (Exception e){
                     e.printStackTrace();
                 }

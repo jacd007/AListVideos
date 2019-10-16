@@ -23,7 +23,6 @@
 
             <!-- head -->
 
-
             <!-- mColor -->
             <LinearLayout
                 android:layout_weight="0.4"
@@ -322,6 +321,12 @@
             </LinearLayout>
 
             <!-- footer -->
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
+
             <LinearLayout
                 android:layout_weight="0.08"
                 android:layout_width="match_parent"

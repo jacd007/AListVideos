@@ -1,5 +1,6 @@
 package com.zippyttech.alist.common;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -17,6 +18,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
@@ -309,6 +311,12 @@ public class UtilsImage {
             // no camera on this device
             return false;
         }
+    }
+
+    private String getFileExtension(Context context, Uri uri) {
+        ContentResolver cR = context.getContentResolver();
+        MimeTypeMap mime = MimeTypeMap.getSingleton();
+        return mime.getExtensionFromMimeType(cR.getType(uri));
     }
 
     public static String bitmapToBase64(Bitmap bitmap) {

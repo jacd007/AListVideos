@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
@@ -17,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,6 +26,8 @@ import android.widget.Toast;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.zippyttech.alist.R;
 import com.zippyttech.alist.adapter.ListAdapter;
 import com.zippyttech.alist.common.Codes;
@@ -65,8 +69,10 @@ public class SelectListActivity extends AppCompatActivity implements View.OnClic
 
     private AListDB aListDB;
 
-    FirebaseDatabase firebaseDatabase;
-    DatabaseReference databaseReference;
+    private FirebaseDatabase mFirebaseDataBase;
+    private DatabaseReference mDatabaseRef;
+    private StorageReference mStorageRef;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,8 +84,9 @@ public class SelectListActivity extends AppCompatActivity implements View.OnClic
 
     private void initFirebase() {
         FirebaseApp.initializeApp(this);
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference();
+        mFirebaseDataBase = FirebaseDatabase.getInstance();
+        mDatabaseRef = mFirebaseDataBase.getReference();
+        FirebaseStorage.getInstance().getReference("uploads");
     }
 
     private void initComponent() {
@@ -94,6 +101,7 @@ public class SelectListActivity extends AppCompatActivity implements View.OnClic
         ibtnSave = (ImageButton) findViewById(R.id.ibtn_list_save);
         ibtnSend = (ImageButton) findViewById(R.id.ibtn_list_send);
         tvCount = (TextView) findViewById(R.id.tv_list_exit);
+
 
 
         ibtnAdd.setOnClickListener(this);
@@ -134,11 +142,22 @@ public class SelectListActivity extends AppCompatActivity implements View.OnClic
                 break;
 
             case R.id.ibtn_list_save:
+                try {
+                    if (adapter.getList().size()>0){
+                        Toast.makeText(mContext, "Lista guardada...", Toast.LENGTH_SHORT).show();
+                        Log.e(TAG,"Saliendo de la apps");
+                        List<VideoModel> aux = adapter.getList();
+                        if (aListDB.getSizeDB()>0) aListDB.deleteAll();
+                        aListDB.setVideo(aux);
+                    }
+                }catch (NullPointerException e){
+                    Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
 
                 break;
 
             case R.id.ibtn_list_send:
-
+                    Toast.makeText(mContext, "No funciona", Toast.LENGTH_SHORT).show();
                 break;
 
             case R.id.tv_list_exit:
