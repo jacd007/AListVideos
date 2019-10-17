@@ -56,43 +56,58 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.1">
+            android:layout_weight="0.1"
+            android:orientation="vertical">
 
-            <ImageButton
-                android:id="@+id/ibtn_list_add"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.25"
+            <ProgressBar
+                android:id="@+id/progress_bar_select"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:background="@color/colorPrimaryDark"
-                android:src="@drawable/ic_add_list"/>
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
 
-            <ImageButton
-                android:id="@+id/ibtn_list_save"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.25"
-                android:background="@color/colorPrimaryDark"
-                android:src="@drawable/ic_save"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.9">
 
-            <ImageButton
-                android:id="@+id/ibtn_list_send"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.25"
-                android:background="@color/colorPrimaryDark"
-                android:src="@drawable/ic_send"/>
+                <ImageButton
+                    android:id="@+id/ibtn_list_add"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.25"
+                    android:background="@color/colorPrimaryDark"
+                    android:src="@drawable/ic_add_list"/>
 
-            <TextView
-                android:id="@+id/tv_list_exit"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.25"
-                android:textColor="@color/White"
-                android:gravity="center"
-                android:text="0000"
-                android:textStyle="bold"
-                android:textSize="17sp"
-                android:background="@color/colorPrimaryDark" />
+                <ImageButton
+                    android:id="@+id/ibtn_list_save"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.25"
+                    android:background="@color/colorPrimaryDark"
+                    android:src="@drawable/ic_save"/>
+
+                <ImageButton
+                    android:id="@+id/ibtn_list_send"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.25"
+                    android:background="@color/colorPrimaryDark"
+                    android:src="@drawable/ic_send"/>
+
+                <TextView
+                    android:id="@+id/tv_list_exit"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.25"
+                    android:textColor="@color/White"
+                    android:gravity="center"
+                    android:text="0000"
+                    android:textStyle="bold"
+                    android:textSize="17sp"
+                    android:background="@color/colorPrimaryDark" />
+
+            </LinearLayout>
 
         </LinearLayout>
 

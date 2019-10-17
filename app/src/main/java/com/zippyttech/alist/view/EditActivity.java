@@ -605,7 +605,7 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
                                     String photoLink = uri.toString();
 //                                    Log.w(TAG,"URL:::: "+photoLink);
                                     Upload upload = new Upload(etTitle.getText().toString().trim(),
-                                            taskSnapshot.getMetadata().getReference().getDownloadUrl().toString() );
+                                            photoLink );
                                     String uploadId = mDatabaseRef.push().getKey();
                                     mDatabaseRef.child(uploadId).setValue(upload);
                                 }

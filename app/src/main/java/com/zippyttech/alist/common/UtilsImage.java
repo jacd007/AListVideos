@@ -61,6 +61,13 @@ public class UtilsImage {
 
     }
 
+    public static Uri uriFromB64(Context inContext, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.PNG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+        return Uri.parse(path);
+    }
+
     public static boolean checkPermission(Context context, String permission){
         int check = ContextCompat.checkSelfPermission(context,permission);
         return (check == PackageManager.PERMISSION_GRANTED);

@@ -1,37 +1,53 @@
 package com.zippyttech.alist.view;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlertDialog;
 import android.app.SearchManager;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.SystemClock;
+import android.os.Handler;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.StorageTask;
+import com.google.firebase.storage.UploadTask;
 import com.zippyttech.alist.R;
 import com.zippyttech.alist.adapter.ListAdapter;
 import com.zippyttech.alist.common.Codes;
+import com.zippyttech.alist.common.Upload;
+import com.zippyttech.alist.common.Utils;
 import com.zippyttech.alist.common.UtilsGson;
+import com.zippyttech.alist.common.UtilsImage;
 import com.zippyttech.alist.common.UtilsItemList;
 import com.zippyttech.alist.data.AListDB;
 import com.zippyttech.alist.model.VideoModel;
@@ -72,6 +88,8 @@ public class SelectListActivity extends AppCompatActivity implements View.OnClic
     private FirebaseDatabase mFirebaseDataBase;
     private DatabaseReference mDatabaseRef;
     private StorageReference mStorageRef;
+    private StorageTask mUploadTask;
+    private ProgressBar mProgressBar;
 
 
     @Override
@@ -84,9 +102,10 @@ public class SelectListActivity extends AppCompatActivity implements View.OnClic
 
     private void initFirebase() {
         FirebaseApp.initializeApp(this);
+        mStorageRef = FirebaseStorage.getInstance().getReference("uploads");
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference("uploads");
+
         mFirebaseDataBase = FirebaseDatabase.getInstance();
-        mDatabaseRef = mFirebaseDataBase.getReference();
-        FirebaseStorage.getInstance().getReference("uploads");
     }
 
     private void initComponent() {
@@ -101,7 +120,7 @@ public class SelectListActivity extends AppCompatActivity implements View.OnClic
         ibtnSave = (ImageButton) findViewById(R.id.ibtn_list_save);
         ibtnSend = (ImageButton) findViewById(R.id.ibtn_list_send);
         tvCount = (TextView) findViewById(R.id.tv_list_exit);
-
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar_select);
 
 
         ibtnAdd.setOnClickListener(this);
@@ -142,36 +161,183 @@ public class SelectListActivity extends AppCompatActivity implements View.OnClic
                 break;
 
             case R.id.ibtn_list_save:
-                try {
-                    if (adapter.getList().size()>0){
-                        Toast.makeText(mContext, "Lista guardada...", Toast.LENGTH_SHORT).show();
-                        Log.e(TAG,"Saliendo de la apps");
-                        List<VideoModel> aux = adapter.getList();
-                        if (aListDB.getSizeDB()>0) aListDB.deleteAll();
-                        aListDB.setVideo(aux);
-                    }
-                }catch (NullPointerException e){
-                    Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-
+               alertDialogWarning2();
                 break;
 
             case R.id.ibtn_list_send:
+//                alertDialogWarning3();
                     Toast.makeText(mContext, "No funciona", Toast.LENGTH_SHORT).show();
                 break;
 
             case R.id.tv_list_exit:
-                if (aListDB.getSizeDB()>0){
-                    List<VideoModel> aux = new ArrayList<>();
-                    Toast.makeText(mContext, "Borrado de DB", Toast.LENGTH_SHORT).show();
-                    aListDB.deleteAll();
-                    aux = aListDB.getVideo();
-                    print(aux);
-                }else Toast.makeText(mContext, "Lista ya esta vacía.", Toast.LENGTH_SHORT).show();
+                alertDialogWarning();
                 break;
 
         }
 
+    }
+
+
+    private void alertDialogWarning(){
+        AlertDialog alertDialog = new AlertDialog.Builder(SelectListActivity.this).create();
+        alertDialog.setTitle("Eliminar Todos los Items");
+        alertDialog.setCancelable(false);
+
+        alertDialog.setMessage("¿Esta seguro que desea eliminar todos los elementos?");
+
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Eliminar",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(SelectListActivity.this, "Eliminando TODA la lista...", Toast.LENGTH_SHORT).show();
+                        if (aListDB.getSizeDB()>0){
+                            List<VideoModel> aux = new ArrayList<>();
+                            Toast.makeText(mContext, "Borrado de DB", Toast.LENGTH_SHORT).show();
+                            aListDB.deleteAll();
+                            aux = aListDB.getVideo();
+                            print(aux);
+                        }else Toast.makeText(mContext, "Lista ya esta vacía.", Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                    }
+                });
+
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancelar",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+        alertDialog.show();
+    }
+
+    private void alertDialogWarning2(){
+        AlertDialog alertDialog = new AlertDialog.Builder(SelectListActivity.this).create();
+        alertDialog.setTitle("Guardar Todos los Items");
+        alertDialog.setCancelable(false);
+
+        alertDialog.setMessage("¿Esta seguro que desea guardar todos los elementos?");
+
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Guardar",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(SelectListActivity.this, "Guardando TODA la lista...", Toast.LENGTH_SHORT).show();
+                        try {
+                            if (adapter.getList().size()>0){
+                                Toast.makeText(mContext, "Lista guardada...", Toast.LENGTH_SHORT).show();
+                                Log.e(TAG,"Guardado de la lista nueva.");
+                                List<VideoModel> aux = adapter.getList();
+                                if (aListDB.getSizeDB()>0) aListDB.deleteAll();
+                                aListDB.setVideo(aux);
+                            }
+                        }catch (NullPointerException e){
+                            Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                        dialog.dismiss();
+                    }
+                });
+
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancelar",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+        alertDialog.show();
+    }
+
+    private void alertDialogWarning3(){
+        AlertDialog alertDialog = new AlertDialog.Builder(SelectListActivity.this).create();
+        alertDialog.setTitle("Guardado en la nube");
+        alertDialog.setCancelable(false);
+
+        alertDialog.setMessage("¿Esta seguro que desea guardar todos los elementos en la nube?");
+
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Guardar",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(SelectListActivity.this, "Guardando TODA la lista...", Toast.LENGTH_SHORT).show();
+
+                        if (aListDB.getSizeDB()>0){
+                            for (VideoModel vm: aListDB.getVideo()){
+                                Bitmap btnImage = UtilsImage.b64ToBitmap(vm.getImage64());
+                                Uri uriImage = UtilsImage.uriFromB64(SelectListActivity.this,btnImage);
+                                if (mUploadTask != null && mUploadTask.isInProgress()) {
+                                    Toast.makeText(SelectListActivity.this, "Upload in progress", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    uploadFile(uriImage);
+                                }
+                            }
+                        }
+
+                        dialog.dismiss();
+                    }
+                });
+
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancelar",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+        alertDialog.show();
+    }
+
+    private void uploadFile(Uri mImageUri) {
+        if (mImageUri != null) {
+            StorageReference fileReference = mStorageRef.child(System.currentTimeMillis()
+                    + "." + getFileExtension(mImageUri));
+
+            mUploadTask = fileReference.putFile(mImageUri)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mProgressBar.setProgress(0);
+                                }
+                            }, 500);
+                                Log.d(TAG,"Upload successful => "+vm.getTitle());
+//                            Toast.makeText(SelectListActivity.this, "Upload successful", Toast.LENGTH_LONG).show();
+                            Task<Uri> task = taskSnapshot.getMetadata().getReference().getDownloadUrl();
+                            task.addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    String photoLink = uri.toString();
+//                                    Log.w(TAG,"URL:::: "+photoLink);
+                                    Upload upload = new Upload(vm.getTitle(),
+                                            photoLink );
+                                    String uploadId = mDatabaseRef.push().getKey();
+                                    mDatabaseRef.child(uploadId).setValue(upload);
+                                }
+                            });
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(SelectListActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                            double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
+                            mProgressBar.setProgress((int) progress);
+                        }
+                    });
+        } else {
+            Toast.makeText(this, "No file selected", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private String getFileExtension(Uri uri) {
+        ContentResolver cR = getContentResolver();
+        MimeTypeMap mime = MimeTypeMap.getSingleton();
+        return mime.getExtensionFromMimeType(cR.getType(uri));
     }
 
     @Override
@@ -356,8 +522,8 @@ public class SelectListActivity extends AppCompatActivity implements View.OnClic
     @Override
     public boolean onQueryTextChange(String s) {
         List<VideoModel> list_aux = new ArrayList<>();
-        list = adapter.getList();
-//        list = animesDB.getVideo();
+//        list = adapter.getList();
+        list = aListDB.getVideo();
 
         for (VideoModel aux:  list ) {
             try {
@@ -398,7 +564,7 @@ public class SelectListActivity extends AppCompatActivity implements View.OnClic
         if (list.size()>0){
             switch (i){
                 case 0:
-                    adapter.notifyDataSetChanged();
+                    print(list);
                     break;
                 case 1:
                     //por status
@@ -417,9 +583,9 @@ public class SelectListActivity extends AppCompatActivity implements View.OnClic
                             va1 = o1.getStat();
                             va2 = o2.getStat();
 
-                            if (va1 < va2) {
+                            if (va1 > va2) {
                                 rsp = 1;
-                            } else if (va1 > va2) {
+                            } else if (va1 < va2) {
                                 rsp = -1;
                             } else {
                                 rsp = 0;
@@ -474,12 +640,12 @@ public class SelectListActivity extends AppCompatActivity implements View.OnClic
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (adapter.getList().size()>0){
-            Toast.makeText(mContext, "Lista guardada...", Toast.LENGTH_SHORT).show();
-            Log.e(TAG,"Saliendo de la apps");
-            List<VideoModel> aux = adapter.getList();
-            if (aListDB.getSizeDB()>0) aListDB.deleteAll();
-            aListDB.setVideo(aux);
-        }
+//        if (adapter.getList().size()>0){
+//            Toast.makeText(mContext, "Lista guardada...", Toast.LENGTH_SHORT).show();
+//            Log.e(TAG,"Saliendo de la apps");
+//            List<VideoModel> aux = adapter.getList();
+//            if (aListDB.getSizeDB()>0) aListDB.deleteAll();
+//            aListDB.setVideo(aux);
+//        }
     }
 }
