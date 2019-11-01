@@ -87,6 +87,7 @@ public class MyAdapter extends ArrayAdapter<SpnModel> {
             @Override
             public void onClick(View v) {
                 SpnModel sm = listState.get(position);
+
             }
         });
 

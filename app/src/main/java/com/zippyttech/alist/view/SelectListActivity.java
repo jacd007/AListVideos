@@ -381,6 +381,12 @@ public class SelectListActivity extends AppCompatActivity implements View.OnClic
             case R.id.action_ord_date:
                 ordenarList(2);
                 break;
+            case R.id.action_recharge:
+                Log.w(TAG,"recharge");
+                Toast.makeText(mContext, "Recarga sin guardado...", Toast.LENGTH_SHORT).show();
+                    ordenarList(0);
+
+                break;
         }
 //        if (id == R.id.act_settings) {
 //            return true;

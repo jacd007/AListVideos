@@ -7,8 +7,8 @@ android {
         applicationId "com.zippyttech.alist"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 4
-        versionName "0.4"
+        versionCode 5
+        versionName "0.5"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true //important
     }
@@ -59,6 +59,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:3.7.0'
     implementation 'de.hdodenhof:circleimageview:3.0.0'
     implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.17'
 
     implementation files('libs/activation.jar')
     implementation files('libs/additionnal.jar')

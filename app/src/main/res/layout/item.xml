@@ -30,10 +30,12 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent">
 
-                    <ImageButton
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        xmlns:app="http://schemas.android.com/apk/res-auto"
                         android:id="@+id/ibtn_item_details"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:padding="2dp"
                         android:background="@color/colorPrimary"
                         android:src="@drawable/ic_schedule"/>
 

@@ -6,12 +6,15 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.media.Image;
 import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,6 +22,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.squareup.picasso.Picasso;
+import com.zippyttech.alist.common.Utils;
 import com.zippyttech.alist.common.UtilsItemList;
 import com.zippyttech.alist.common.UtilsGson;
 import com.zippyttech.alist.data.AListDB;
@@ -35,7 +41,7 @@ import java.util.List;
 class ListViewHolder extends RecyclerView.ViewHolder {
 
     ImageButton mSetting;
-    ImageButton mIcon;
+    ImageView mIcon;
     TextView mTitle,mCap,mNameCapType;
     View mVColor;
 
@@ -45,7 +51,7 @@ class ListViewHolder extends RecyclerView.ViewHolder {
         mTitle = (TextView) itemView.findViewById(R.id.tv_item_name);
         mCap = (TextView) itemView.findViewById(R.id.tv_item_cap);
         mNameCapType = (TextView) itemView.findViewById(R.id.tv_item_name_cap);
-        mIcon = (ImageButton) itemView.findViewById(R.id.ibtn_item_details);
+        mIcon = (ImageView) itemView.findViewById(R.id.ibtn_item_details);
         mVColor = (View) itemView.findViewById(R.id.v_item_color);
         mSetting = (ImageButton) itemView.findViewById(R.id.ibtn_item_setting);
 
@@ -95,10 +101,31 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder>{
 
             if (mData.get(position).getmDay().toLowerCase().equals(DAY)){
                 holder.mIcon.setImageDrawable(context.getDrawable(R.drawable.ic_notifications_active));
-            }else if(mData.get(position).getmDay().equals("No Asignado")){
-                holder.mIcon.setImageDrawable(context.getDrawable(R.drawable.ic_schedule_undefined));
-            }else {
-                holder.mIcon.setImageDrawable(context.getDrawable(R.drawable.ic_schedule));
+            }
+//            else if(mData.get(position).getmDay().equals("No Asignado")){
+////                setHolderImage(mData.get(position).getImage64(),holder.mIcon);
+//                holder.mIcon.setImageDrawable(context.getDrawable(R.drawable.ic_report_problem));
+//            }
+            else {
+                switch (mData.get(position).getmStat()) {
+                    case "No Asignado":
+                        holder.mIcon.setImageDrawable(context.getDrawable(R.drawable.ic_report_problem));
+//                        setHolderImage(mData.get(position).getImage64(),holder.mIcon);
+                        break;
+                    case "En emisión":
+                        holder.mIcon.setImageDrawable(context.getDrawable(R.drawable.ic_schedule));
+                        break;
+                    case "Finalizado":
+                        holder.mIcon.setImageDrawable(context.getDrawable(R.drawable.ic_check_circle));
+                        break;
+                    case "Estreno":
+                        setHolderImage(mData.get(position).getImage64(),holder.mIcon);
+                        break;
+                    case "Olvidado":
+                        holder.mIcon.setImageDrawable(context.getDrawable(R.drawable.ic_schedule_undefined));
+                        break;
+                }
+
             }
 
             holder.mSetting.setOnClickListener((v)->{
@@ -157,6 +184,42 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder>{
 //            }
 //        });
 
+    }
+
+    private void setHolderImage(String mImage, ImageView mImageView) {
+        try {
+            if(!mImage.equals("")) {
+                if (!mImage.contains("http")) {
+                    if (!mImage.contains(" ")){
+                        Bitmap bitmap = Utils.Base64ToBitmap(mImage);
+                        bitmap = Utils.resizeImage(context,bitmap,40,40);
+                        mImageView.setImageBitmap(bitmap);
+                    }else {
+                        mImageView.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_no_image));
+                    }
+
+                } else {
+                    Glide.with(context)
+                            .load(mImage)
+                            .placeholder(R.drawable.ic_broken_image)
+                            .error(R.drawable.ic_no_image)
+                            .into(mImageView);
+                }
+            }
+            else {
+                Glide.with(context)
+                        .load(mImage)
+                        .placeholder(R.drawable.ic_broken_image)
+                        .error(R.drawable.ic_no_image)
+                        .into(mImageView);
+            }
+        }catch (IllegalArgumentException e){
+            e.printStackTrace();
+            mImageView.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_no_image));
+        }catch (VerifyError e) {
+            mImageView.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_no_image));
+            e.printStackTrace();
+        }
     }
 
     public List<VideoModel> getList(){
@@ -222,6 +285,8 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder>{
 
         alertDialog.show();
     }
+
+
 
 }
 

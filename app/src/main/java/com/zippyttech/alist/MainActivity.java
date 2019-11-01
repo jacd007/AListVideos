@@ -4,7 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.view.WindowManager;
 
+import com.zippyttech.alist.services.ServiceStartOnBoot;
 import com.zippyttech.alist.view.SelectListActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -16,9 +19,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main);
 
-        goIntroScreen();
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                goIntroScreen();
+//              startServices();
+            }
+        }, 2000);
 
     }
 
@@ -26,5 +38,10 @@ public class MainActivity extends AppCompatActivity {
         intent = new Intent(this, SelectListActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
+    }
+
+    private void startServices(){
+        Intent serviceIntent = new Intent(this, ServiceStartOnBoot.class);
+        this.startService(serviceIntent);
     }
 }
