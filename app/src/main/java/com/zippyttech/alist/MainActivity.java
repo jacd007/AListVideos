@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
                 goIntroScreen();
 //              startServices();
             }
-        }, 2000);
+        }, 1000);
 
     }
 

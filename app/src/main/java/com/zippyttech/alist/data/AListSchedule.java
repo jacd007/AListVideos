@@ -51,11 +51,9 @@ public class AListSchedule {
                     Images.COLUMN_NAME_TITLE + TEXT_TYPE  +
                     ")";
 
-//    public static final String ALTER_TABLES_COMPANY_ADD_DEBT = "" +
-//            "ALTER TABLE "+Product.TABLE_NAME+" ADD COLUMN "+Product.COLUMN_NAME_DEBT+INTEGER_TYPE+" DEFAULT 0";
-//
-//    public static final String ALTER_TABLES_COMPANY_ADD_BALANCE = "" +
-//            "ALTER TABLE "+Product.TABLE_NAME+" ADD COLUMN "+Product.COLUMN_NAME_BALANCE+INTEGER_TYPE+" DEFAULT 0";
+
+
+
     public static abstract class Videos implements BaseColumns {
 
         public static final String TABLE_NAME = "Video";

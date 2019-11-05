@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -21,6 +22,7 @@ import com.zippyttech.alist.R;
 
 public abstract class DialogView {
     private static final String TAG="DialogViewx";
+    public static final int DELLAY = 3000;
     private static Dialog dialog;
     private static Context c;
     private static final String SHARED_KEY = "shared_key";
@@ -87,6 +89,15 @@ public abstract class DialogView {
             }
         });
         dialog.show();
+
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(dialog != null && dialog.isShowing()) dialog.dismiss();
+            }
+        }, DELLAY);
+
     }
 
     private static void setDataItem(VideoModel aa) {

@@ -109,19 +109,28 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder>{
             else {
                 switch (mData.get(position).getmStat()) {
                     case "No Asignado":
+                        holder.mCap.setVisibility(View.VISIBLE);
                         holder.mIcon.setImageDrawable(context.getDrawable(R.drawable.ic_report_problem));
 //                        setHolderImage(mData.get(position).getImage64(),holder.mIcon);
                         break;
                     case "En emisión":
+                        holder.mCap.setVisibility(View.VISIBLE);
                         holder.mIcon.setImageDrawable(context.getDrawable(R.drawable.ic_schedule));
                         break;
                     case "Finalizado":
+                        holder.mCap.setVisibility(View.GONE);
+                        holder.mNameCapType.setText("Fin");
                         holder.mIcon.setImageDrawable(context.getDrawable(R.drawable.ic_check_circle));
                         break;
                     case "Estreno":
+                        holder.mCap.setVisibility(View.INVISIBLE);
+                        holder.mCap.setEnabled(false);
+                        holder.mVColor.setBackgroundColor(Color.YELLOW);
                         setHolderImage(mData.get(position).getImage64(),holder.mIcon);
                         break;
                     case "Olvidado":
+                        holder.mCap.setVisibility(View.VISIBLE);
+                        holder.mVColor.setBackgroundColor(Color.WHITE);
                         holder.mIcon.setImageDrawable(context.getDrawable(R.drawable.ic_schedule_undefined));
                         break;
                 }
@@ -153,7 +162,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder>{
                     });
 
                     builder.setCancelable(true);
-                    builder.setTitle("#"+(position+1)+" - Seleccione una opción");
+                    builder.setTitle(""+mData.get(position).getTitle());
                     builder.show();
 
             });
@@ -173,7 +182,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder>{
             });
 
             holder.mCap.setOnClickListener((v)->{
-                Toast.makeText(context, "Tipo: "+mData.get(position).getmType(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Día: "+mData.get(position).getmDay(), Toast.LENGTH_SHORT).show();
             });
 
 //        holder.itemView.setOnClickListener(new View.OnClickListener() {

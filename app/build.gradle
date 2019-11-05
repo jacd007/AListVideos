@@ -7,8 +7,8 @@ android {
         applicationId "com.zippyttech.alist"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 5
-        versionName "0.5"
+        versionCode 6
+        versionName "0.6"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true //important
     }
@@ -56,9 +56,9 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.android.support:mediarouter-v7:29.0.1"'
     implementation 'com.github.fafaldo:fab-toolbar:1.2.0'
-    implementation 'com.github.bumptech.glide:glide:3.7.0'
-    implementation 'de.hdodenhof:circleimageview:3.0.0'
-    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.github.bumptech.glide:glide:4.10.0'
+    implementation 'de.hdodenhof:circleimageview:3.0.1'
+    implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.17'
 
     implementation files('libs/activation.jar')
@@ -68,8 +68,8 @@ dependencies {
     implementation 'com.github.jacd007:DateLibrary:1.0.0.5'
 
     implementation 'com.google.firebase:firebase-auth:19.1.0'
-    implementation 'com.google.firebase:firebase-analytics:17.2.0'
-    implementation 'com.google.firebase:firebase-database:19.1.0'
+    implementation 'com.google.firebase:firebase-analytics:17.2.1'
+    implementation 'com.google.firebase:firebase-database:19.2.0'
     implementation 'com.google.firebase:firebase-storage:19.1.0'
 
     implementation 'com.github.jacd007:ApiAsyncTask:0.2'
