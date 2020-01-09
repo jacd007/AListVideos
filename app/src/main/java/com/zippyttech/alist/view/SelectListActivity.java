@@ -620,7 +620,7 @@ public class SelectListActivity extends AppCompatActivity implements View.OnClic
 //                        }catch (NullPointerException e){
 //                            e.printStackTrace();
 //                        }
-                            va1 = o1.getDateC();
+                            va1 = o1.getDateU();
                             va2 = o2.getDateU();
 
                             if (va1 < va2) {

@@ -100,6 +100,7 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
     private DatabaseReference mDatabaseRef;
     private ProgressBar mProgressBar;
     private StorageTask mUploadTask;
+    private int intColor;
 
 
     @Override
@@ -260,7 +261,7 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
         spnStatus.setSelection(posStat);
         spnNextDay.setSelection(posday);
         spnType.setSelection(postype);
-        spnColor.setSelection(poscolor);
+        spnColor.setSelection(intColor);
     }
 
     private void writeData(List<VideoModel> list) {
@@ -367,9 +368,11 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btnItemCancel:
                 Intent i1 = new Intent();
                 setResult(RESULT_CANCELED, i1);
+                finish();
                 break;
             case R.id.btnItemSave:
 
+               // vm = new VideoModel();
                 vm.setTag(UUID.randomUUID().toString());
                 vm.setTitle(tvTitles.getText().toString());
                 vm.setCap(Integer.parseInt(tvCap.getText().toString()));
@@ -384,6 +387,9 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
                 vm.setDay(spnNextDay.getSelectedItemPosition());
                 vm.setType(spnType.getSelectedItemPosition());
                 vm.setColor(spnColor.getSelectedItemPosition());
+                vm.setmColor(COLOR_POS[vm.getColor()]);
+                String imag = ""+vm.getImage64();
+                if (imag.isEmpty() || imag.equals("null"))vm.setImage64("http://xxxxxxxxxxx");
 
                 list = new ArrayList<>();
                 list.add(vm);
@@ -481,8 +487,12 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
             if (parametros != null) {
                 NEW_ITEM = parametros.getBoolean("new");
                 String date = parametros.getString(UtilsItemList.myLIST);
+                List<VideoModel> auxList = new ArrayList<>();
+                auxList = UtilsGson.loadList(this);
+
                 POSITION = parametros.getInt("position");
-                Log.w(TAG, "List item: " + date);
+                intColor = parametros.getInt("color");
+//                Log.w(TAG, "List item: " + date);
 
                 list = UtilsGson.StringToList(date);
 //                Log.w(TAG,"image bundle: "+list.get(0).getImage64());
@@ -496,6 +506,8 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
         }
         if (list.size()>0)
             vm = list.get(0);
+
+        vm.setColor(intColor);
     }
 
     private void mFollowText(final EditText editText, final TextView tuTextView){

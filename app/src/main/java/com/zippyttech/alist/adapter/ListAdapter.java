@@ -2,17 +2,19 @@ package com.zippyttech.alist.adapter;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.media.Image;
 import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -23,7 +25,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.squareup.picasso.Picasso;
 import com.zippyttech.alist.common.Utils;
 import com.zippyttech.alist.common.UtilsItemList;
 import com.zippyttech.alist.common.UtilsGson;
@@ -94,12 +95,13 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder>{
             holder.mCap.setText(""+mData.get(position).getCap());
             holder.mNameCapType.setText(mData.get(position).getmOther());
             holder.mVColor.setBackgroundColor(Color.parseColor(mData.get(position).getmColor()));
+            holder.mIcon.setBackgroundColor(Color.parseColor(mData.get(position).getmColor()));
 
             String DAY = UtilsDate.dateTodayFormat("EEEE").toLowerCase();
 //            DAY = UtilsDate.reformateDate("2019-10-13 12:00:00","yyyy-MM-dd HH:mm:ss","EEEE").toLowerCase();
 //        Log.w("onBindViewHodler","DAY: "+DAY+" DATE: "+mData.get(position).getmDay().toLowerCase());
 
-            if (mData.get(position).getmDay().toLowerCase().equals(DAY)){
+            if (mData.get(position).getmDay().toLowerCase().equals(DAY) &&mData.get(position).getStat()!=2){
                 holder.mIcon.setImageDrawable(context.getDrawable(R.drawable.ic_notifications_active));
             }
 //            else if(mData.get(position).getmDay().equals("No Asignado")){
@@ -110,7 +112,8 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder>{
                 switch (mData.get(position).getmStat()) {
                     case "No Asignado":
                         holder.mCap.setVisibility(View.VISIBLE);
-                        holder.mIcon.setImageDrawable(context.getDrawable(R.drawable.ic_report_problem));
+                        holder.mIcon.setImageDrawable(context.getDrawable(R.drawable.ic_mood_bad));
+//                        holder.mIcon.setImageDrawable(context.getDrawable(R.drawable.ic_report_problem));
 //                        setHolderImage(mData.get(position).getImage64(),holder.mIcon);
                         break;
                     case "En emisión":
@@ -130,7 +133,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder>{
                         break;
                     case "Olvidado":
                         holder.mCap.setVisibility(View.VISIBLE);
-                        holder.mVColor.setBackgroundColor(Color.WHITE);
+                        holder.mVColor.setBackgroundColor(Color.BLACK);
                         holder.mIcon.setImageDrawable(context.getDrawable(R.drawable.ic_schedule_undefined));
                         break;
                 }
@@ -140,7 +143,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder>{
             holder.mSetting.setOnClickListener((v)->{
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(this.context);
-                    builder.setItems(new CharSequence[]{"Editar", "Borrar Item"}, (dialogInterface, i) -> {
+                    builder.setItems(new CharSequence[]{"Editar todo","Editar solo Capitulo/Episodio","Cambiar estado", "Borrar Este Video"}, (dialogInterface, i) -> {
                         switch (i){
                             case 0:
                                 try {
@@ -152,10 +155,17 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder>{
                                 intent.putExtra(UtilsItemList.myLIST, UtilsGson.ListToString(AuxList));
                                     intent.putExtra("new",false);
                                 intent.putExtra("position",position);
+                                intent.putExtra("color",mData.get(position).getColor());
                                     ((SelectListActivity) context).startActivityForResult(intent,1500);
                                 }catch (Exception e){e.printStackTrace();}
                                 break;
                             case 1:
+                                preViewData(mData.get(position),position);
+                                break;
+                            case 2:
+                                dialogEditStatus(mData.get(position),position);
+                                break;
+                            case 3:
                                 alertDialogWarning(position,mData.get(position));
                                 break;
                         }
@@ -195,13 +205,197 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder>{
 
     }
 
+    private int select=0;
+    private void dialogEditStatus(VideoModel vm, int pos) {
+        //#00FFFFFF
+        final int stad = vm.getStat();
+        Dialog dialog = new Dialog(context, R.style.Theme_AppCompat_DayNight_Dialog);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(false);
+        dialog.setContentView(R.layout.dialog_edit_status);
+
+        Button btnSave = (Button) dialog.findViewById(R.id.btn_dialog_save);
+        Button btnCancel = (Button) dialog.findViewById(R.id.btn_dialog_cancel);
+
+        Button btnS0 = (Button) dialog.findViewById(R.id.btn_dialog_undefinited);
+        Button btnS1 = (Button) dialog.findViewById(R.id.btn_dialog_schedule);
+        Button btnS2 = (Button) dialog.findViewById(R.id.btn_dialog_finish);
+        Button btnS3 = (Button) dialog.findViewById(R.id.btn_dialog_premiere);
+        Button btnS4 = (Button) dialog.findViewById(R.id.btn_dialog_old);
+
+        select = vm.getStat();
+        switch (vm.getStat()){
+            case 0:
+                btnS0.setBackground(context.getResources().getDrawable(R.drawable.border_selected));
+                break;
+            case 1:
+                btnS1.setBackground(context.getResources().getDrawable(R.drawable.border_selected));
+                break;
+            case 2:
+                btnS2.setBackground(context.getResources().getDrawable(R.drawable.border_selected));
+                break;
+            case 3:
+                btnS3.setBackground(context.getResources().getDrawable(R.drawable.border_selected));
+                break;
+            case 4:
+                btnS4.setBackground(context.getResources().getDrawable(R.drawable.border_selected));
+                break;
+        }
+
+        btnSave.setOnClickListener((view -> {
+            if (select!=stad){
+                vm.setmDateU(UtilsDate.dateTodayFormat("yyyy-MM-dd HH:mm:ss"));
+                vm.setDateU(UtilsDate.Epoch(vm.getmDateU(),"yyyy-MM-dd HH:mm:ss"));
+                mData.set(pos,vm);
+                refresh();
+
+                AListDB aListDB = new AListDB(context);
+                if (aListDB.getSizeDB()>0) aListDB.deleteAll();
+                aListDB.setVideo(getList());
+                Toast.makeText(context, "Item actualizado...", Toast.LENGTH_SHORT).show();
+            }else {
+                Toast.makeText(context, "Fallido causa: Mismo estado.", Toast.LENGTH_SHORT).show();
+            }
+            dialog.dismiss();
+        }));
+
+        btnS0.setOnClickListener((view -> {
+            select= 0;
+            vm.setStat(select);
+            btnS0.setBackground(context.getResources().getDrawable(R.drawable.border_selected));
+            btnS1.setBackground(context.getResources().getDrawable(R.drawable.border_no_selected));
+            btnS2.setBackground(context.getResources().getDrawable(R.drawable.border_no_selected));
+            btnS3.setBackground(context.getResources().getDrawable(R.drawable.border_no_selected));
+            btnS4.setBackground(context.getResources().getDrawable(R.drawable.border_no_selected));
+        }));
+        btnS1.setOnClickListener((view -> {
+            select= 1;
+            vm.setStat(select);
+            btnS0.setBackground(context.getResources().getDrawable(R.drawable.border_no_selected));
+            btnS1.setBackground(context.getResources().getDrawable(R.drawable.border_selected));
+            btnS2.setBackground(context.getResources().getDrawable(R.drawable.border_no_selected));
+            btnS3.setBackground(context.getResources().getDrawable(R.drawable.border_no_selected));
+            btnS4.setBackground(context.getResources().getDrawable(R.drawable.border_no_selected));
+        }));
+        btnS2.setOnClickListener((view -> {
+            select= 2;
+            vm.setStat(select);
+            btnS0.setBackground(context.getResources().getDrawable(R.drawable.border_no_selected));
+            btnS1.setBackground(context.getResources().getDrawable(R.drawable.border_no_selected));
+            btnS2.setBackground(context.getResources().getDrawable(R.drawable.border_selected));
+            btnS3.setBackground(context.getResources().getDrawable(R.drawable.border_no_selected));
+            btnS4.setBackground(context.getResources().getDrawable(R.drawable.border_no_selected));
+        }));
+        btnS3.setOnClickListener((view -> {
+            select= 3;
+            vm.setStat(select);
+            btnS0.setBackground(context.getResources().getDrawable(R.drawable.border_no_selected));
+            btnS1.setBackground(context.getResources().getDrawable(R.drawable.border_no_selected));
+            btnS2.setBackground(context.getResources().getDrawable(R.drawable.border_no_selected));
+            btnS3.setBackground(context.getResources().getDrawable(R.drawable.border_selected));
+            btnS4.setBackground(context.getResources().getDrawable(R.drawable.border_no_selected));
+        }));
+        btnS4.setOnClickListener((view -> {
+            select= 4;
+            vm.setStat(select);
+            btnS0.setBackground(context.getResources().getDrawable(R.drawable.border_no_selected));
+            btnS1.setBackground(context.getResources().getDrawable(R.drawable.border_no_selected));
+            btnS2.setBackground(context.getResources().getDrawable(R.drawable.border_no_selected));
+            btnS3.setBackground(context.getResources().getDrawable(R.drawable.border_no_selected));
+            btnS4.setBackground(context.getResources().getDrawable(R.drawable.border_selected));
+        }));
+
+        btnCancel.setOnClickListener((view -> { dialog.dismiss(); }));
+
+    dialog.show();
+    }
+
+    private int capItem=0;
+    private String datess="No Date";
+    private void preViewData(VideoModel vm, final int pos){
+        final String[] STAT= context.getResources().getStringArray(R.array.stat);
+        Dialog dialog = new Dialog(context, R.style.Theme_AppCompat_DayNight_Dialog);
+//        dialog = new Dialog(context,R.style.Animate3);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(false);
+        dialog.setContentView(R.layout.dialog_edit_capitule);
+
+        ImageView btnExit = (ImageView) dialog.findViewById(R.id.iv_dialog_cancel);
+        ImageView btnSave = (ImageView) dialog.findViewById(R.id.ibtn_dialog_save);
+        ImageView btnAdd = (ImageView) dialog.findViewById(R.id.ibtn_dialog_add);
+        ImageView btnSustract = (ImageView) dialog.findViewById(R.id.ibtn_dialog_sustract);
+
+        View iColor = (View) dialog.findViewById(R.id.v_dialog_color);
+        ImageView ivImage = (ImageView) dialog.findViewById(R.id.iv_dialog_image);
+        TextView tvName = (TextView) dialog.findViewById(R.id.tv_dialog_name);
+        TextView tvStat = (TextView) dialog.findViewById(R.id.tv_dialog_stat);
+        TextView tvCap = (TextView) dialog.findViewById(R.id.tv_dialog_cap);
+        TextView tvDate = (TextView) dialog.findViewById(R.id.tv_dialog_date);
+
+        datess=vm.getmDateC();
+        capItem=vm.getCap();
+        iColor.setBackgroundColor(Color.parseColor(vm.getmColor()));
+        tvName.setText(""+ vm.getTitle());
+        tvStat.setText(""+STAT[vm.getStat()]);
+        tvCap.setText("cap: "+vm.getCap());
+        tvDate.setText(""+vm.getmDateU());
+        setHolderImage(vm.getImage64(),ivImage);
+
+        btnExit.setOnClickListener((view -> { dialog.dismiss(); }));
+
+        btnAdd.setOnClickListener((view -> {
+            capItem=vm.getCap();
+            if (vm.getCap()<9999) {
+                capItem++;
+                vm.setCap(capItem);
+            }else
+                Toast.makeText(context, "No se puede SUBIR el numero", Toast.LENGTH_SHORT).show();
+
+            tvCap.setText("");
+            tvCap.setText("cap: "+vm.getCap());
+            tvDate.setText("");
+            tvDate.setText(UtilsDate.dateTodayFormat("yyyy-MM-dd HH:mm:ss"));
+            tvDate.setTextColor(Color.parseColor("#002fe7"));
+        }));
+
+        btnSustract.setOnClickListener((view -> {
+            capItem=vm.getCap();
+            if (capItem>0) {
+                capItem--;
+                vm.setCap(capItem);
+            }else
+                Toast.makeText(context, "No se puede Bajar el numero", Toast.LENGTH_SHORT).show();
+
+            tvCap.setText("");
+            tvCap.setText("cap: "+vm.getCap());
+            tvDate.setText(UtilsDate.dateTodayFormat("yyyy-MM-dd HH:mm:ss"));
+            tvDate.setTextColor(Color.parseColor("#002fe7"));
+        }));
+
+        btnSave.setOnClickListener(view -> {
+            vm.setmDateU(tvDate.getText().toString());
+            vm.setDateU(UtilsDate.Epoch(vm.getmDateU(),"yyyy-MM-dd HH:mm:ss"));
+            vm.setCap(Integer.parseInt(tvCap.getText().toString()));
+            mData.set(pos,vm);
+            refresh();
+
+            AListDB aListDB = new AListDB(context);
+            if (aListDB.getSizeDB()>0) aListDB.deleteAll();
+            aListDB.setVideo(getList());
+            Toast.makeText(context, "Item actualizado...", Toast.LENGTH_SHORT).show();
+
+            dialog.dismiss();
+        });
+        dialog.show();
+    }
+
     private void setHolderImage(String mImage, ImageView mImageView) {
         try {
             if(!mImage.equals("")) {
                 if (!mImage.contains("http")) {
                     if (!mImage.contains(" ")){
                         Bitmap bitmap = Utils.Base64ToBitmap(mImage);
-                        bitmap = Utils.resizeImage(context,bitmap,40,40);
+                        bitmap = Utils.resizeImage(context,bitmap,1050,1050);
                         mImageView.setImageBitmap(bitmap);
                     }else {
                         mImageView.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_no_image));

@@ -18,6 +18,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@drawable/background_2"
             android:orientation="vertical">
 
             <LinearLayout
@@ -36,7 +37,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:padding="2dp"
-                        android:background="@color/colorPrimary"
+                        app:civ_border_color="@color/colorPrimaryDark"
+                        app:civ_border_overlay="true"
+                        app:civ_border_width="1dp"
+                        android:background="@color/White"
                         android:src="@drawable/ic_schedule"/>
 
                 </LinearLayout>
@@ -60,6 +64,7 @@
                         android:gravity="center"
                         android:textSize="16sp"
                         android:textStyle="bold"
+                        android:textColor="@color/White"
                         android:lines="2"
                         android:text="@string/app_name"/>
 
@@ -78,6 +83,7 @@
                         android:layout_height="0dp"
                         android:textStyle="bold"
                         android:text="Capitulo:"
+                        android:textColor="@color/White"
                         android:gravity="center"
                         android:textSize="13sp"
                         tools:ignore="NestedWeights" />
@@ -87,6 +93,7 @@
                         android:layout_weight="0.6"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
+                        android:textColor="@color/White"
                         android:gravity="center"
                         android:text="00000"/>
 

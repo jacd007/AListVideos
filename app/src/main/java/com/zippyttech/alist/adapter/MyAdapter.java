@@ -3,6 +3,7 @@ package com.zippyttech.alist.adapter;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ public class MyAdapter extends ArrayAdapter<SpnModel> {
     private static ArrayList<SpnModel> listState;
     private MyAdapter myAdapter;
     private boolean isFromView = false;
+    private int intColor;
 
 
 
@@ -33,6 +35,14 @@ public class MyAdapter extends ArrayAdapter<SpnModel> {
         this.mvColor = vColors;
     }
 
+    public MyAdapter(Context context, int resource, List<SpnModel> objects, View vColors, int color) {
+        super(context, resource, objects);
+        this.mContext = context;
+        this.listState = (ArrayList<SpnModel>) objects;
+        this.myAdapter = this;
+        this.mvColor = vColors;
+        this.intColor = color;
+    }
 
     @Override
     public View getDropDownView(int position, View convertView,
@@ -53,16 +63,15 @@ public class MyAdapter extends ArrayAdapter<SpnModel> {
             LayoutInflater layoutInflator = LayoutInflater.from(mContext);
             convertView = layoutInflator.inflate(R.layout.item_color_spinner, null);
             holder = new ViewHolder();
-            holder.mColor = (View) convertView
-                    .findViewById(R.id.i_spn_color);
-            holder.mTextView = (TextView) convertView
-                    .findViewById(R.id.tv_spn_title);
+            holder.mColor = (View) convertView.findViewById(R.id.i_spn_color);
+            holder.mTextView = (TextView) convertView.findViewById(R.id.tv_spn_title);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
 
         try {
+
             int colors = Color.parseColor(listState.get(position).getmColor());
             String text = listState.get(position).getTitle();
                 mvColor.setBackgroundColor(colors);
@@ -76,7 +85,7 @@ public class MyAdapter extends ArrayAdapter<SpnModel> {
 
 
         if (position<1){
-            holder.mColor.setVisibility(View.GONE);
+            holder.mColor.setVisibility(View.INVISIBLE);
         }else {
             holder.mColor.setVisibility(View.VISIBLE);
         }

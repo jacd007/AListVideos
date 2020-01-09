@@ -25,7 +25,7 @@
     <color name="Yellow" >#cee100</color>
     <color name="Orange" >#dc4600</color>
     <color name="Pink" >#c60056</color>
-    <color name="White" >#b9b9b9</color>
+    <color name="White" >#FFFFFF</color>
     <color name="Black" >#000000</color>
 
 </resources>
