@@ -3,12 +3,12 @@
     <solid
         android:alpha="1"/>
     <stroke android:width="2dip"
-        android:color="#74414141" />
+        android:color="#FFEB3B" />
     <corners android:radius="20dip"/>
     <gradient
-        android:angle="270"
+        android:angle="45"
         android:startColor="#00FFFFFF"
-        android:centerColor="#00FFFFFF"
+        android:centerColor="#34FFC107"
         android:endColor="#00FFFFFF"/>
     <padding
         android:left="0dip"

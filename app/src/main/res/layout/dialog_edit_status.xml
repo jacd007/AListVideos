@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@drawable/mr_dialog_material_background_dark">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -29,7 +30,7 @@
             android:layout_weight="0.2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="#B3000000"
+            android:background="@drawable/background_2"
             android:layout_margin="5dp"
             android:orientation="vertical">
             <RelativeLayout
@@ -72,7 +73,7 @@
             android:layout_weight="0.2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="#B3000000"
+            android:background="@drawable/background_2"
             android:layout_margin="5dp"
             android:orientation="vertical">
             <RelativeLayout
@@ -108,7 +109,7 @@
             android:layout_weight="0.2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="#B3000000"
+            android:background="@drawable/background_2"
             android:layout_margin="5dp"
             android:orientation="vertical">
             <RelativeLayout
@@ -151,7 +152,7 @@
             android:layout_weight="0.2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="#B3000000"
+            android:background="@drawable/background_2"
             android:layout_margin="5dp"
             android:orientation="vertical">
             <RelativeLayout
@@ -159,11 +160,13 @@
                 android:layout_height="wrap_content">
 
                 <ImageView
-                    android:layout_width="50dp"
+                    android:id="@+id/iv_dialog_image"
+                    android:layout_width="45dp"
                     android:layout_height="50dp"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentEnd="true"
                     android:layout_gravity="center"
+                    android:layout_marginTop="2dp"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
                     android:src="@drawable/ic_item_alist" />
@@ -172,7 +175,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="#fff"
                     android:text="Estreno"
-                    android:layout_marginTop="45dp"
+                    android:layout_marginTop="50dp"
                     android:gravity="center"/>
 
                 <Button
@@ -187,7 +190,7 @@
             android:layout_weight="0.2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="#B3000000"
+            android:background="@drawable/background_2"
             android:layout_margin="5dp"
             android:orientation="vertical">
             <RelativeLayout
@@ -231,7 +234,7 @@
             android:id="@+id/btn_dialog_save"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="#BF000000"
+            android:background="@drawable/background_2"
             android:drawableLeft="@drawable/ic_save"
             android:textColor="#fff"
             android:padding="5dp"
@@ -241,7 +244,7 @@
             android:id="@+id/btn_dialog_cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="#BF000000"
+            android:background="@drawable/background_2"
             android:drawableLeft="@drawable/ic_exit_to_app"
             android:textColor="#fff"
             android:padding="5dp"

@@ -95,7 +95,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder>{
             holder.mCap.setText(""+mData.get(position).getCap());
             holder.mNameCapType.setText(mData.get(position).getmOther());
             holder.mVColor.setBackgroundColor(Color.parseColor(mData.get(position).getmColor()));
-            holder.mIcon.setBackgroundColor(Color.parseColor(mData.get(position).getmColor()));
+           // holder.mIcon.setBackgroundColor(Color.parseColor(mData.get(position).getmColor()));
 
             String DAY = UtilsDate.dateTodayFormat("EEEE").toLowerCase();
 //            DAY = UtilsDate.reformateDate("2019-10-13 12:00:00","yyyy-MM-dd HH:mm:ss","EEEE").toLowerCase();
@@ -104,17 +104,15 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder>{
             if (mData.get(position).getmDay().toLowerCase().equals(DAY) &&mData.get(position).getStat()!=2){
                 holder.mIcon.setImageDrawable(context.getDrawable(R.drawable.ic_notifications_active));
             }
-//            else if(mData.get(position).getmDay().equals("No Asignado")){
-////                setHolderImage(mData.get(position).getImage64(),holder.mIcon);
-//                holder.mIcon.setImageDrawable(context.getDrawable(R.drawable.ic_report_problem));
-//            }
             else {
                 switch (mData.get(position).getmStat()) {
                     case "No Asignado":
                         holder.mCap.setVisibility(View.VISIBLE);
-                        holder.mIcon.setImageDrawable(context.getDrawable(R.drawable.ic_mood_bad));
-//                        holder.mIcon.setImageDrawable(context.getDrawable(R.drawable.ic_report_problem));
-//                        setHolderImage(mData.get(position).getImage64(),holder.mIcon);
+                        if (mData.get(position).getDay()!=0)
+                            holder.mIcon.setImageDrawable(context.getDrawable(R.drawable.ic_mood_bad));
+                        else
+
+                            //setHolderImage(mData.get(position).getImage64(),holder.mIcon);
                         break;
                     case "En emisión":
                         holder.mCap.setVisibility(View.VISIBLE);
@@ -216,6 +214,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder>{
 
         Button btnSave = (Button) dialog.findViewById(R.id.btn_dialog_save);
         Button btnCancel = (Button) dialog.findViewById(R.id.btn_dialog_cancel);
+        ImageView ivImage = (ImageView) dialog.findViewById(R.id.iv_dialog_image);
 
         Button btnS0 = (Button) dialog.findViewById(R.id.btn_dialog_undefinited);
         Button btnS1 = (Button) dialog.findViewById(R.id.btn_dialog_schedule);
@@ -223,22 +222,24 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder>{
         Button btnS3 = (Button) dialog.findViewById(R.id.btn_dialog_premiere);
         Button btnS4 = (Button) dialog.findViewById(R.id.btn_dialog_old);
 
+        setHolderImage(vm.getImage64(),ivImage);
+
         select = vm.getStat();
         switch (vm.getStat()){
             case 0:
-                btnS0.setBackground(context.getResources().getDrawable(R.drawable.border_selected));
+                btnS0.setBackground(context.getResources().getDrawable(R.drawable.border_selected_yelow));
                 break;
             case 1:
-                btnS1.setBackground(context.getResources().getDrawable(R.drawable.border_selected));
+                btnS1.setBackground(context.getResources().getDrawable(R.drawable.border_selected_yelow));
                 break;
             case 2:
-                btnS2.setBackground(context.getResources().getDrawable(R.drawable.border_selected));
+                btnS2.setBackground(context.getResources().getDrawable(R.drawable.border_selected_yelow));
                 break;
             case 3:
-                btnS3.setBackground(context.getResources().getDrawable(R.drawable.border_selected));
+                btnS3.setBackground(context.getResources().getDrawable(R.drawable.border_selected_yelow));
                 break;
             case 4:
-                btnS4.setBackground(context.getResources().getDrawable(R.drawable.border_selected));
+                btnS4.setBackground(context.getResources().getDrawable(R.drawable.border_selected_yelow));
                 break;
         }
 
@@ -375,7 +376,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder>{
         btnSave.setOnClickListener(view -> {
             vm.setmDateU(tvDate.getText().toString());
             vm.setDateU(UtilsDate.Epoch(vm.getmDateU(),"yyyy-MM-dd HH:mm:ss"));
-            vm.setCap(Integer.parseInt(tvCap.getText().toString()));
+            vm.setCap(Integer.parseInt(tvCap.getText().toString().substring(5)));
             mData.set(pos,vm);
             refresh();
 
@@ -489,25 +490,4 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder>{
         alertDialog.show();
     }
 
-
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

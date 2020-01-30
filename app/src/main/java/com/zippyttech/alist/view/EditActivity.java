@@ -237,6 +237,8 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         });
+
+
     }
 
     private void setPositionSpinner() {
@@ -327,11 +329,12 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
         vm.setDateU( UtilsDate.Epoch( UtilsDate.getDateToday(),"yyyy-MM-dd HH:mm:ss") );
         vm.setmDateU( UtilsDate.getDateToday() );
         vm.setmColor(COLOR_IN[8]);
-        vm.setmDay(DAYS[1]);
+        vm.setmDay(DAYS[2]);
         vm.setmType(TYPE[3]);
-        vm.setmStat(STAT[2]);
+        vm.setmStat(STAT[1]);
         vm.setStat(2);
         vm.setmOther(OTHERS[3]);
+        vm.setImage64(UtilsItemList.IMAGE_DEFAULT);
         list.add(vm);
     }
 

@@ -393,6 +393,66 @@ public class AListDB {
 
     }
 
+    public static VideoModel getVideosByDay(String day) {
+        VideoModel item = new VideoModel();
+        String dato = "";
+        try {
+            db = mDbHelper.getWritableDatabase();
+        }catch (NullPointerException e){
+            e.printStackTrace();
+        }
+
+        List<VideoModel> Product = new ArrayList<>();
+
+        //TODO: HACER UN "WHERE" PARA ENABLED
+
+        String sortOrder = "";
+        String arg[] = {"false"};
+        String DAY= AListSchedule.Videos.COLUMN_NAME_DAY.toLowerCase().replaceAll("á","a")
+                .toLowerCase().replaceAll("é","e").toLowerCase().replaceAll("í","i")
+                .toLowerCase().replaceAll("ó","o").toLowerCase().replaceAll("ú","u");
+        Cursor c = db.rawQuery(
+                " SELECT * "+
+                        " FROM "+ AListSchedule.Videos.TABLE_NAME
+                        +" WHERE "+DAY+" = '"+day+"' ", null);
+        c.moveToFirst();
+        int count = c.getCount();
+
+        if (c.moveToFirst()) {
+            do {
+                item = new VideoModel();
+
+                item.setId(c.getInt(c.getColumnIndex(AListSchedule.Videos.COLUMN_NAME_ID)));
+                item.setCap(Integer.parseInt(c.getString(c.getColumnIndex(AListSchedule.Videos.COLUMN_CAPITULE))));
+                item.setStat(Integer.parseInt(c.getString(c.getColumnIndex(AListSchedule.Videos.COLUMN_ID_STAT))));
+                item.setDateC(Integer.parseInt(c.getString(c.getColumnIndex(AListSchedule.Videos.COLUMN_ID_DATA))));
+                item.setDateU(Integer.parseInt(c.getString(c.getColumnIndex(AListSchedule.Videos.COLUMN_ID_DATA_UPDATE))));
+                item.setType(Integer.parseInt(c.getString(c.getColumnIndex(AListSchedule.Videos.COLUMN_ID_TYPE))));
+                item.setDay(Integer.parseInt(c.getString(c.getColumnIndex(AListSchedule.Videos.COLUMN_ID_DAY))));
+                item.setColor(Integer.parseInt(c.getString(c.getColumnIndex(AListSchedule.Videos.COLUMN_ID_COLOR))));
+
+                item.setTitle(c.getString(c.getColumnIndex(AListSchedule.Videos.COLUMN_TITLE)));
+                item.setmDateC(c.getString(c.getColumnIndex(AListSchedule.Videos.COLUMN_NAME_DATA)));
+                item.setmDateU(c.getString(c.getColumnIndex(AListSchedule.Videos.COLUMN_NAME_DATA_UPDATE)));
+                item.setmStat(c.getString(c.getColumnIndex(AListSchedule.Videos.COLUMN_NAME_STATUS)));
+                item.setmColor(c.getString(c.getColumnIndex(AListSchedule.Videos.COLUMN_COLOR)));
+                item.setmDay(c.getString(c.getColumnIndex(AListSchedule.Videos.COLUMN_NAME_DAY)));
+                item.setmType(c.getString(c.getColumnIndex(AListSchedule.Videos.COLUMN_NAME_TYPE)));
+                item.setmOther(c.getString(c.getColumnIndex(AListSchedule.Videos.COLUMN_NAME_OTHERS)));
+
+                item.setImage64(c.getString(c.getColumnIndex(AListSchedule.Videos.COLUMN_NAME_IMAGE)));
+                item.setmType(c.getString(c.getColumnIndex(AListSchedule.Videos.COLUMN_NAME_IMAGE_DIR)));
+                item.setmType(c.getString(c.getColumnIndex(AListSchedule.Videos.COLUMN_NAME_TAG)));
+
+                Product.add(item);
+
+            } while (c.moveToNext());
+        }
+
+        return item;
+
+    }
+
     public void setVideo(List<VideoModel> listVideos) {
         try {
             String table_name = AListSchedule.Videos.TABLE_NAME;

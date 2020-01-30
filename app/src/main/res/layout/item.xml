@@ -29,6 +29,7 @@
                 <LinearLayout
                     android:layout_weight="0.10"
                     android:layout_width="0dp"
+                    android:background="@drawable/background_3"
                     android:layout_height="match_parent">
 
                     <de.hdodenhof.circleimageview.CircleImageView
@@ -36,11 +37,11 @@
                         android:id="@+id/ibtn_item_details"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:padding="2dp"
+                        android:padding="1dp"
                         app:civ_border_color="@color/colorPrimaryDark"
                         app:civ_border_overlay="true"
                         app:civ_border_width="1dp"
-                        android:background="@color/White"
+                        android:background="#00FFFFFF"
                         android:src="@drawable/ic_schedule"/>
 
                 </LinearLayout>

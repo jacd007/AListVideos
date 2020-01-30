@@ -1,6 +1,8 @@
 package com.zippyttech.alist.model;
 
-public class VideoModel {
+import com.zippyttech.alist.common.Item;
+
+public class VideoModel implements Item {
     private int id, cap, dateC,dateU,type,stat,color,day;
     private String title,mDateC,mDateU,mStat,mColor,mDay,mType,mOther;
     private String Image64,mImageDir,tag;
@@ -158,5 +160,10 @@ public class VideoModel {
 
     public void setDay(int day) {
         this.day = day;
+    }
+
+    @Override
+    public int getViewType() {
+        return 1;
     }
 }
